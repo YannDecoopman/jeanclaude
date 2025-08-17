@@ -1,118 +1,223 @@
-# 🤖 Claude Framework - Clarify & Build
+# 🤖 Jean Claude Framework v2 - ReAct & Learn
 
-Un framework réutilisable pour travailler efficacement avec Claude Code sur tous vos projets.
+Un framework intelligent pour maximiser l'efficacité de Claude Code avec agents autonomes, hooks, et système de mémoire.
 
 ## 🚀 Installation rapide
 
 ```bash
-# Pour un nouveau projet
-git clone https://github.com/[your-username]/claude-framework.git
+# Clone et installation
+git clone https://github.com/YannDecoopman/jeanclaude.git
 cd mon-projet
-./claude-framework/install.sh .
+./jeanclaude/install.sh .
 
-# Ou comme submodule
-git submodule add https://github.com/[your-username]/claude-framework.git .claude
+# Ou comme submodule Git
+git submodule add https://github.com/YannDecoopman/jeanclaude.git .jeanclaude-framework
+./.jeanclaude-framework/install.sh .
 ```
 
-## 📋 Méthodologie
+## 🏗️ Architecture v2
 
-### 1. **Clarification First**
-Avant toute action, Claude reformule et pose des questions pour confirmer la compréhension exacte.
+### 🤖 **Agents Autonomes**
+- **navigator.sh** - Découverte et cartographie du code
+- **clarifier.sh** - Reformulation et validation des demandes
+- **git-guardian.sh** - Commits automatiques toutes les 30 min
+- **test-runner.sh** - Tests progressifs (smoke → unit → integration)
+- **memory-keeper.sh** - Gestion mémoire court/long terme
 
-### 2. **Atomic Features**
-Découpage en features atomiques, une seule à la fois, validation avant de continuer.
+### 🪝 **Hooks de Workflow**
+- **pre-code.sh** - Avant d'écrire (clarification, navigation)
+- **post-code.sh** - Après écriture (tests, sauvegarde)
+- **pre-commit.sh** - Validation avant commit (secrets, lint)
+- **post-error.sh** - Gestion des erreurs (logging, analyse)
+- **session-end.sh** - Fin de session (analyse, backup)
 
-### 3. **Progressive Documentation**
-La documentation se construit au fur et à mesure, pas après coup.
+### 📋 **Méthodes Documentées**
+- **REACT_PATTERN.md** - Cycle Observe→Reason→Act→Reflect
+- **CLARIFICATION.md** - Process de clarification systématique
+- **GIT_STRATEGY.md** - Commits atomiques et branches feature
 
-## 🤖 Agents inclus
+### 🧠 **Système de Mémoire**
+```
+.jeanclaude/
+├── memory/
+│   ├── session/    # Mémoire court terme (session courante)
+│   └── project/    # Mémoire long terme (patterns, pitfalls)
+├── logs/           # Observabilité structurée
+└── backups/        # Sauvegardes automatiques
+```
 
-- **Navigator** : Cartographie complète de la codebase
-- **Planner** : Découpe les demandes en tâches atomiques
-- **Validator** : Vérifie l'absence de régressions
-- **Documenter** : Maintient la documentation à jour
-
-## 📁 Structure
+## 📁 Structure après installation
 
 ```
 your-project/
-├── CLAUDE.md          # Instructions spécifiques au projet
-├── NAVIGATION.md      # Carte de la codebase (généré)
-├── TODO.md           # Features en cours et backlog
-└── .claude/          # Framework (ce repo)
-    ├── methods/      # Processus standards
-    ├── agents/       # Templates d'agents
-    └── templates/    # Fichiers modèles
+├── CLAUDE.md                    # Instructions spécifiques au projet
+├── .jeanclaude/                 # Framework installé
+│   ├── agents/                  # 5 agents autonomes
+│   ├── hooks/                   # 5 hooks de workflow
+│   ├── methods/                 # Méthodologies ReAct
+│   ├── templates/               # Templates réutilisables
+│   ├── memory/                  # Système de mémoire
+│   │   ├── session/            # Session courante
+│   │   └── project/            # Apprentissages long terme
+│   ├── logs/                   # Logs structurés
+│   └── config.json             # Configuration
 ```
 
-## 🔄 Workflow type
+## 🔄 Workflow ReAct
 
-1. **Nouveau projet**
+### 1. **OBSERVE** - Comprendre
 ```bash
-# Initialiser
-./claude-framework/install.sh my-project
-
-# Première session Claude
-"Utilise le framework .claude. Commence par analyser la codebase."
+# L'agent navigator découvre la structure
+.jeanclaude/agents/navigator.sh discover
 ```
 
-2. **Feature request**
-```
-You: "Ajoute feature X"
-Claude: [CLARIFICATION] "Je comprends que... Questions: ..."
-You: "Réponses..."
-Claude: [PLAN] "Je découpe en 3 tâches atomiques..."
-You: "OK pour tâche 1"
-Claude: [EXECUTION] "Je fais uniquement tâche 1"
+### 2. **REASON** - Planifier
+```bash
+# L'agent clarifier reformule et valide
+.jeanclaude/agents/clarifier.sh "Add RSS detection feature"
 ```
 
-## 📝 Fichiers créés automatiquement
+### 3. **ACT** - Exécuter
+```bash
+# Git guardian crée une branche
+.jeanclaude/agents/git-guardian.sh branch feature/rss-detection
 
-- `CLAUDE.md` : Instructions projet
-- `NAVIGATION.md` : Map de la codebase
-- `TODO.md` : Tracking des features
-- `.claude-session.json` : État de la session
+# Code implementation...
 
-## 🎨 Personnalisation
-
-Éditez `.claude/config.yml` :
-```yaml
-project:
-  name: "Mon Projet"
-  type: "web|api|cli|mobile"
-  
-methods:
-  clarification: true
-  atomic_features: true
-  validation_required: true
-  
-agents:
-  navigator: true
-  planner: true
-  validator: true
-  
-constraints:
-  - "Pas de dépendances externes"
-  - "Python 3.10+"
-  - "Tests obligatoires"
+# Tests progressifs
+.jeanclaude/agents/test-runner.sh smoke
 ```
 
-## 📚 Exemples
+### 4. **REFLECT** - Évaluer
+```bash
+# Memory keeper sauvegarde les apprentissages
+.jeanclaude/agents/memory-keeper.sh learn
 
-Voir le dossier `examples/` pour des projets types :
-- Web app (FastAPI + React)
-- CLI tool (Python)
-- API REST (Node.js)
-- Mobile app (React Native)
+# Session analysis
+.jeanclaude/agents/memory-keeper.sh analyze
+```
+
+## 💡 Utilisation avec Claude
+
+### Première session
+```
+"Utilise le framework Jean Claude installé dans .jeanclaude/
+Commence par analyser le projet avec l'agent navigator."
+```
+
+### Feature development
+```
+You: "Ajoute la détection automatique des flux RSS"
+
+Claude: [CLARIFIER] "Je comprends que tu veux détecter automatiquement 
+les flux RSS des sites. Cela implique :
+1. Scanner les balises <link> dans le HTML
+2. Vérifier les URLs standards (/rss, /feed)
+3. Valider les flux trouvés
+C'est correct ?"
+
+You: "Oui, go"
+
+Claude: [GIT-GUARDIAN] Création branche feature/rss-detection
+Claude: [NAVIGATOR] Analyse de la structure existante...
+Claude: [ACT] Implémentation phase 1...
+Claude: [TEST-RUNNER] Tests smoke passés ✅
+Claude: [MEMORY-KEEPER] Pattern sauvegardé pour réutilisation
+```
+
+## 🎯 Fonctionnalités Clés
+
+### Auto-commit intelligent
+```bash
+# Le Git Guardian commit automatiquement après 30 min
+# ou après 10 fichiers modifiés
+.jeanclaude/agents/git-guardian.sh auto
+```
+
+### Tests progressifs
+```bash
+# Smoke tests (rapides)
+.jeanclaude/agents/test-runner.sh smoke
+
+# Tests complets avec coverage
+.jeanclaude/agents/test-runner.sh full
+```
+
+### Mémoire persistante
+```bash
+# Rappeler le contexte d'une session précédente
+.jeanclaude/agents/memory-keeper.sh recall "rss"
+
+# Analyser les patterns de succès/échec
+.jeanclaude/agents/memory-keeper.sh analyze
+```
+
+## 📊 Observabilité
+
+Les logs structurés permettent de suivre :
+- Décisions prises (`.jeanclaude/memory/session/decisions.log`)
+- Erreurs rencontrées (`.jeanclaude/memory/session/errors.log`)
+- Actions des agents (`.jeanclaude/logs/agents.log`)
+
+## 🛠️ Configuration
+
+Éditez `.jeanclaude/config.json` :
+```json
+{
+  "version": "2.0",
+  "features": {
+    "agents": true,
+    "hooks": true,
+    "memory": true,
+    "react_pattern": true
+  },
+  "settings": {
+    "auto_commit_interval": 1800,
+    "memory_retention_days": 7,
+    "log_level": "info"
+  }
+}
+```
+
+## 📚 Templates inclus
+
+- **agent.template.sh** - Créer vos propres agents
+- **feature-plan.template.md** - Planifier une feature complète
+- **test-suite.template.py** - Structure de tests progressive
+
+## 🚀 Commandes utiles
+
+```bash
+# Status complet du projet
+.jeanclaude/agents/git-guardian.sh status
+
+# Navigation rapide
+.jeanclaude/agents/navigator.sh map
+
+# Fin de session propre
+.jeanclaude/hooks/session-end.sh
+```
 
 ## 🤝 Contribution
 
-Ce framework évolue avec l'usage. PRs bienvenues !
+Le framework évolue avec l'usage. PRs bienvenues sur :
+https://github.com/YannDecoopman/jeanclaude
+
+## 📈 Roadmap v3
+
+- [ ] Intégration avec GitHub Actions
+- [ ] Dashboard web pour visualiser la mémoire
+- [ ] Agents spécialisés (security, performance)
+- [ ] Export des patterns en best practices
 
 ## 📄 License
 
 MIT - Utilisez librement dans vos projets
 
 ---
-*Framework développé pour optimiser le travail avec Claude Code*
-*Version 1.0.0*
+
+*Jean Claude Framework - "Think before you code"*
+
+*Développé par Yann avec Claude pour optimiser le pair programming IA*
+
+**Version 2.0** | [Documentation](https://github.com/YannDecoopman/jeanclaude) | [Issues](https://github.com/YannDecoopman/jeanclaude/issues)
