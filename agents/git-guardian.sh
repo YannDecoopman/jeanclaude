@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🛡️ Git Guardian Agent v2.2 - Gestion Git avec support JSON
+# 🛡️ Git Guardian Agent v2.3 - Gestion Git avec support JSON et trust
 # Usage: ./git-guardian.sh [check|commit|branch|status] [message] [--json]
 
 set -e
@@ -8,8 +8,10 @@ set -e
 # Load libraries
 CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
 OUTPUT_LIB="$(dirname "$0")/../lib/output-formatter.sh"
+TRUST_LIB="$(dirname "$0")/../lib/trust-manager.sh"
 [ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
 [ -f "$OUTPUT_LIB" ] && source "$OUTPUT_LIB"
+[ -f "$TRUST_LIB" ] && source "$TRUST_LIB"
 
 # Parse arguments (remove --json if present)
 CLEAN_ARGS=()
@@ -115,6 +117,11 @@ function create_feature_branch() {
         branch_name="feature/work-$(date +%Y%m%d-%H%M)"
     fi
     
+    # Trust check for branch creation
+    if ! requires_confirmation "branch" "$branch_name" "git"; then
+        auto_proceed "branch" "$branch_name" "Creating new branch"
+    fi
+    
     # Ensure we're on main/master
     local main_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@' || echo "main")
     
@@ -135,6 +142,14 @@ function smart_commit() {
     if [ "$changes" -eq 0 ]; then
         log "No changes to commit"
         return 0
+    fi
+    
+    # Trust check for commit
+    if requires_confirmation "commit" "repository" "git"; then
+        read -p "Commit $changes files with message '$custom_message'? (y/n): " confirm
+        [ "$confirm" != "y" ] && return 1
+    else
+        auto_proceed "commit" "$changes files" "Committing changes"
     fi
     
     # Analyze changes to generate better commit message

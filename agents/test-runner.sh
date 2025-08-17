@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🧪 Test Runner Agent v2.2 - Tests avec support JSON
+# 🧪 Test Runner Agent v2.3 - Tests avec support JSON et trust
 # Usage: ./test-runner.sh [smoke|unit|integration|full] [path] [--json]
 
 set -e
@@ -8,8 +8,10 @@ set -e
 # Load libraries
 CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
 OUTPUT_LIB="$(dirname "$0")/../lib/output-formatter.sh"
+TRUST_LIB="$(dirname "$0")/../lib/trust-manager.sh"
 [ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
 [ -f "$OUTPUT_LIB" ] && source "$OUTPUT_LIB"
+[ -f "$TRUST_LIB" ] && source "$TRUST_LIB"
 
 # Parse arguments (remove --json if present)
 CLEAN_ARGS=()
@@ -267,6 +269,11 @@ if [ "$FRAMEWORK" = "unknown" ]; then
     echo "⚠️  No test framework detected in $TARGET"
     echo "Supported frameworks: pytest, jest, mocha, vitest, phpunit, go test"
     exit 0
+fi
+
+# Trust check for test execution
+if ! requires_confirmation "test" "$LEVEL tests" "testing"; then
+    auto_proceed "test" "$LEVEL" "Running $LEVEL tests"
 fi
 
 # Execute test level

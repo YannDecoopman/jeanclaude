@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 🧭 Navigator Agent v2.2 - Découverte avec support JSON optionnel
+# 🧭 Navigator Agent v2.3 - Découverte avec support JSON et trust
 # Usage: ./navigator.sh [discover|map|search] [path|query] [--json]
 
 set -e
@@ -8,8 +8,10 @@ set -e
 # Load libraries
 CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
 OUTPUT_LIB="$(dirname "$0")/../lib/output-formatter.sh"
+TRUST_LIB="$(dirname "$0")/../lib/trust-manager.sh"
 [ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
 [ -f "$OUTPUT_LIB" ] && source "$OUTPUT_LIB"
+[ -f "$TRUST_LIB" ] && source "$TRUST_LIB"
 
 # Parse arguments (remove --json if present)
 CLEAN_ARGS=()
@@ -42,6 +44,12 @@ function log() {
 
 function discover_structure() {
     local path=$1
+    
+    # Trust check for discovery
+    if ! requires_confirmation "discover" "$path" "navigation"; then
+        auto_proceed "discover" "$path" "Discovering project structure"
+    fi
+    
     log "Discovering structure of $path"
     
     # Check cache validity
