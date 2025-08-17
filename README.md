@@ -1,6 +1,6 @@
-# 🤖 Jean Claude Framework v2.1 - ReAct & Learn with Minimal Context
+# 🤖 Jean Claude Framework v2.2 - ReAct, Learn & Communicate
 
-Un framework intelligent pour maximiser l'efficacité de Claude Code avec agents autonomes, hooks, système de mémoire et gestion de contexte minimaliste.
+Un framework intelligent pour maximiser l'efficacité de Claude Code avec agents autonomes, hooks, système de mémoire, contexte minimaliste et communication JSON optionnelle.
 
 ## 🚀 Installation rapide
 
@@ -13,6 +13,37 @@ cd mon-projet
 # Ou comme submodule Git
 git submodule add https://github.com/YannDecoopman/jeanclaude.git .jeanclaude-framework
 ./.jeanclaude-framework/install.sh .
+```
+
+## 🆕 Nouveautés v2.2
+
+### 📊 **Standardisation I/O Optionnelle**
+Tous les agents supportent maintenant le flag `--json` pour une sortie structurée :
+
+```bash
+# Sortie texte (défaut)
+./agents/navigator.sh discover
+> 🧭 Discovering structure...
+> Found 42 files in 3 directories
+
+# Sortie JSON (pour chaînage d'agents)
+./agents/navigator.sh discover --json
+{
+  "agent": "navigator",
+  "status": "success",
+  "data": {
+    "files": 42,
+    "directories": 3
+  }
+}
+```
+
+### 🔄 **Communication Inter-Agents**
+```bash
+# Chaînage d'agents avec JSON
+NAV_OUTPUT=$(./agents/navigator.sh discover --json)
+FILES=$(echo "$NAV_OUTPUT" | jq -r '.data.files')
+./agents/test-runner.sh smoke --json | jq '.data.passed'
 ```
 
 ## 🆕 Nouveautés v2.1
@@ -241,4 +272,4 @@ MIT - Utilisez librement dans vos projets
 
 *Développé par Yann avec Claude pour optimiser le pair programming IA*
 
-**Version 2.1** | [Documentation](https://github.com/YannDecoopman/jeanclaude) | [Issues](https://github.com/YannDecoopman/jeanclaude/issues)
+**Version 2.2** | [Documentation](https://github.com/YannDecoopman/jeanclaude) | [Issues](https://github.com/YannDecoopman/jeanclaude/issues)

@@ -1,16 +1,25 @@
 #!/bin/bash
 
-# 🧪 Test Runner Agent v2.1 - Tests avec contexte minimal
-# Usage: ./test-runner.sh [smoke|unit|integration|full] [path]
+# 🧪 Test Runner Agent v2.2 - Tests avec support JSON
+# Usage: ./test-runner.sh [smoke|unit|integration|full] [path] [--json]
 
 set -e
 
-# Load context manager
+# Load libraries
 CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+OUTPUT_LIB="$(dirname "$0")/../lib/output-formatter.sh"
 [ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+[ -f "$OUTPUT_LIB" ] && source "$OUTPUT_LIB"
 
-LEVEL=${1:-smoke}
-TARGET=${2:-.}
+# Parse arguments (remove --json if present)
+CLEAN_ARGS=()
+for arg in "$@"; do
+    if [ "$arg" != "--json" ]; then
+        CLEAN_ARGS+=("$arg")
+    fi
+done
+LEVEL=${CLEAN_ARGS[0]:-smoke}
+TARGET=${CLEAN_ARGS[1]:-.}
 
 # Test Runner needs ONLY: project type and last test results
 if [ -n "$JEANCLAUDE_DIR" ]; then
@@ -28,7 +37,9 @@ LAST_TEST_LEVEL=$(get_context "test-runner" "agent" "last_level" || echo "none")
 LAST_TEST_STATUS=$(get_context "test-runner" "agent" "last_status" || echo "unknown")
 
 function log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [TEST-RUNNER] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
+    if ! is_json_output; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] [TEST-RUNNER] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
+    fi
 }
 
 function detect_test_framework() {
@@ -181,7 +192,13 @@ function generate_test_report() {
     local log_file="$OUTPUT_DIR/test-${level}.log"
     
     if [ ! -f "$log_file" ]; then
-        log "No test results to report"
+        if is_json_output; then
+            output_warning "No test results available" \
+                "{\"level\": \"$level\", \"results\": null}" \
+                "test-runner"
+        else
+            log "No test results to report"
+        fi
         return
     fi
     
@@ -273,4 +290,14 @@ case $LEVEL in
 esac
 
 # Generate report
-generate_test_report "$LEVEL"
+if is_json_output; then
+    # JSON output of test results
+    local passed=$(grep -c "passed\|PASS\|ok" "$OUTPUT_DIR/test-${LEVEL}.log" 2>/dev/null || echo "0")
+    local failed=$(grep -c "failed\|FAIL\|error" "$OUTPUT_DIR/test-${LEVEL}.log" 2>/dev/null || echo "0")
+    
+    output_success "Tests completed" \
+        "{\"level\": \"$LEVEL\", \"framework\": \"$FRAMEWORK\", \"passed\": $passed, \"failed\": $failed}" \
+        "test-runner" "$LEVEL"
+else
+    generate_test_report "$LEVEL"
+fi

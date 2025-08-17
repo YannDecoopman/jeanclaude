@@ -1,16 +1,25 @@
 #!/bin/bash
 
-# 🧭 Navigator Agent v2.1 - Découverte et navigation avec contexte minimal
-# Usage: ./navigator.sh [discover|map|search] [path|query]
+# 🧭 Navigator Agent v2.2 - Découverte avec support JSON optionnel
+# Usage: ./navigator.sh [discover|map|search] [path|query] [--json]
 
 set -e
 
-# Load context manager
+# Load libraries
 CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+OUTPUT_LIB="$(dirname "$0")/../lib/output-formatter.sh"
 [ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+[ -f "$OUTPUT_LIB" ] && source "$OUTPUT_LIB"
 
-ACTION=${1:-discover}
-TARGET=${2:-.}
+# Parse arguments (remove --json if present)
+CLEAN_ARGS=()
+for arg in "$@"; do
+    if [ "$arg" != "--json" ]; then
+        CLEAN_ARGS+=("$arg")
+    fi
+done
+ACTION=${CLEAN_ARGS[0]:-discover}
+TARGET=${CLEAN_ARGS[1]:-.}
 
 # Get ONLY minimal context needed
 if [ -n "$JEANCLAUDE_DIR" ]; then
@@ -22,11 +31,13 @@ else
 fi
 
 # Navigator-specific context (if exists)
-LAST_SCAN=$(get_context "navigator" "agent" "last_scan" || echo "never")
-CACHE_VALID=$(get_context "navigator" "agent" "cache_valid_until" || echo "0")
+LAST_SCAN=$(get_context "navigator" "agent" "last_scan" 2>/dev/null || echo "never")
+CACHE_VALID=$(get_context "navigator" "agent" "cache_valid_until" 2>/dev/null || echo "0")
 
 function log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [NAVIGATOR] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
+    if ! is_json_output; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] [NAVIGATOR] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
+    fi
 }
 
 function discover_structure() {
@@ -37,7 +48,15 @@ function discover_structure() {
     local now=$(date +%s)
     if [ "$now" -lt "$CACHE_VALID" ] && [ -f "$OUTPUT_DIR/structure.md" ]; then
         log "Using cached structure (valid until $(date -d @$CACHE_VALID))"
-        cat "$OUTPUT_DIR/structure.md"
+        if is_json_output; then
+            local files_count=$(find "$path" -type f 2>/dev/null | wc -l || echo 0)
+            local dirs_count=$(find "$path" -type d 2>/dev/null | wc -l || echo 0)
+            output_success "Structure discovered from cache" \
+                "{\"files\": $files_count, \"directories\": $dirs_count, \"cached\": true}" \
+                "navigator" "discover"
+        else
+            cat "$OUTPUT_DIR/structure.md"
+        fi
         return 0
     fi
     
@@ -150,4 +169,7 @@ case $ACTION in
         ;;
 esac
 
-log "Navigator agent completed: $ACTION"
+# Final output
+if ! is_json_output; then
+    log "Navigator agent completed: $ACTION"
+fi

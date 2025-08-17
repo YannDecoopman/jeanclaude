@@ -1,16 +1,25 @@
 #!/bin/bash
 
-# 🛡️ Git Guardian Agent v2.1 - Gestion Git avec contexte minimal
-# Usage: ./git-guardian.sh [check|commit|branch|status]
+# 🛡️ Git Guardian Agent v2.2 - Gestion Git avec support JSON
+# Usage: ./git-guardian.sh [check|commit|branch|status] [message] [--json]
 
 set -e
 
-# Load context manager
+# Load libraries
 CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+OUTPUT_LIB="$(dirname "$0")/../lib/output-formatter.sh"
 [ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+[ -f "$OUTPUT_LIB" ] && source "$OUTPUT_LIB"
 
-ACTION=${1:-check}
-MESSAGE=${2:-""}
+# Parse arguments (remove --json if present)
+CLEAN_ARGS=()
+for arg in "$@"; do
+    if [ "$arg" != "--json" ]; then
+        CLEAN_ARGS+=("$arg")
+    fi
+done
+ACTION=${CLEAN_ARGS[0]:-check}
+MESSAGE=${CLEAN_ARGS[1]:-""}
 
 # Git Guardian needs ONLY: git state and commit history
 if [ -n "$JEANCLAUDE_DIR" ]; then
@@ -32,7 +41,9 @@ COMMIT_INTERVAL=1800  # 30 minutes in seconds
 MIN_CHANGES=1         # Minimum files changed to trigger auto-commit
 
 function log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [GIT-GUARDIAN] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
+    if ! is_json_output; then
+        echo "[$(date '+%Y-%m-%d %H:%M:%S')] [GIT-GUARDIAN] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
+    fi
 }
 
 function get_last_commit_time() {
@@ -165,7 +176,16 @@ function show_status() {
     local time_since=$((now - last_commit_time))
     local current_branch=$(git branch --show-current 2>/dev/null || echo "unknown")
     
-    cat << EOF
+    if is_json_output; then
+        local recent_commits=$(git log --oneline -5 --format='%H|%s' 2>/dev/null | \
+            awk -F'|' '{printf "{\\\"hash\\\":\\\"%s\\\",\\\"message\\\":\\\"%s\\\"},", $1, $2}' | \
+            sed 's/,$//')
+        
+        output_success "Git status retrieved" \
+            "{\"branch\": \"$current_branch\", \"uncommitted_files\": $changes, \"last_commit_minutes_ago\": $(($time_since / 60)), \"recent_commits\": [$recent_commits]}" \
+            "git-guardian" "status"
+    else
+        cat << EOF
 📊 Git Status Report
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Branch: $current_branch
@@ -177,6 +197,7 @@ Recent commits:
 $(git log --oneline -5 2>/dev/null || echo "No commits yet")
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 EOF
+    fi
     
     if should_commit; then
         echo "⚠️  Auto-commit recommended!"
