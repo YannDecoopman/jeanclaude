@@ -38,11 +38,22 @@ echo ""
 
 # 1. Create directory structure
 echo "📁 Creating directory structure..."
-mkdir -p "$JEANCLAUDE_DIR"/{agents,hooks,methods,templates,memory/{session,project},logs,backups}
+mkdir -p "$JEANCLAUDE_DIR"/{agents,hooks,methods,templates,lib,context/{agents,session},memory/{session,project},logs,backups}
 
 log_success "Directory structure created"
 
-# 2. Copy agents
+# 2. Copy libraries
+echo ""
+echo "📚 Installing libraries..."
+if [ -d "$FRAMEWORK_DIR/lib" ]; then
+    cp -r "$FRAMEWORK_DIR/lib" "$JEANCLAUDE_DIR/"
+    chmod +x "$JEANCLAUDE_DIR/lib/"*.sh 2>/dev/null || true
+    log_success "Libraries installed"
+else
+    log_info "No libraries to install"
+fi
+
+# 3. Copy agents
 echo ""
 echo "🤖 Installing agents..."
 if [ -d "$FRAMEWORK_DIR/agents" ]; then
@@ -53,7 +64,7 @@ else
     log_info "No agents to install"
 fi
 
-# 3. Copy hooks
+# 4. Copy hooks
 echo ""
 echo "🪝 Installing hooks..."
 if [ -d "$FRAMEWORK_DIR/hooks" ]; then
@@ -64,7 +75,7 @@ else
     log_info "No hooks to install"
 fi
 
-# 4. Copy methods
+# 5. Copy methods
 echo ""
 echo "📋 Installing methods..."
 if [ -d "$FRAMEWORK_DIR/methods" ]; then
@@ -74,7 +85,7 @@ else
     log_info "No methods to install"
 fi
 
-# 5. Copy templates
+# 6. Copy templates
 echo ""
 echo "📄 Installing templates..."
 if [ -d "$FRAMEWORK_DIR/templates" ]; then
@@ -84,7 +95,7 @@ else
     log_info "No templates to install"
 fi
 
-# 6. Create CLAUDE.md if not exists
+# 7. Create CLAUDE.md if not exists
 echo ""
 echo "📝 Setting up CLAUDE.md..."
 if [ ! -f "$PROJECT_ROOT/CLAUDE.md" ]; then
@@ -98,7 +109,7 @@ else
     log_info "CLAUDE.md already exists - skipping"
 fi
 
-# 7. Initialize Git hooks (optional)
+# 8. Initialize Git hooks (optional)
 echo ""
 echo "🔗 Git hooks setup..."
 if [ -d "$PROJECT_ROOT/.git" ]; then
@@ -118,12 +129,12 @@ else
     log_info "Not a Git repository - skipping hooks"
 fi
 
-# 8. Create initial configuration
+# 9. Create initial configuration
 echo ""
 echo "⚙️  Creating configuration..."
 cat > "$JEANCLAUDE_DIR/config.json" << EOF
 {
-  "version": "2.0",
+  "version": "2.1",
   "project_name": "$(basename "$PROJECT_ROOT")",
   "installed_date": "$(date -Iseconds)",
   "features": {
@@ -142,7 +153,7 @@ cat > "$JEANCLAUDE_DIR/config.json" << EOF
 EOF
 log_success "Configuration created"
 
-# 9. Initialize memory
+# 10. Initialize memory and context
 echo ""
 echo "🧠 Initializing memory system..."
 cat > "$JEANCLAUDE_DIR/memory/project/context.md" << EOF
@@ -167,13 +178,21 @@ Started: $(date)
 Project: $(basename "$PROJECT_ROOT")
 
 ## Installation
-- Jean Claude Framework v2 installed
+- Jean Claude Framework v2.1 installed
+- Context management enabled
 - Ready to start development
 EOF
 
+# Initialize context system
+if [ -f "$JEANCLAUDE_DIR/lib/context-manager.sh" ]; then
+    source "$JEANCLAUDE_DIR/lib/context-manager.sh"
+    JEANCLAUDE_DIR="$JEANCLAUDE_DIR" init_context
+    log_success "Context system initialized"
+fi
+
 log_success "Memory system initialized"
 
-# 10. Create quick reference
+# 11. Create quick reference
 echo ""
 echo "📚 Creating quick reference..."
 cat > "$JEANCLAUDE_DIR/README.md" << EOF
@@ -222,7 +241,7 @@ EOF
 
 log_success "Quick reference created"
 
-# 11. Detect project type and suggest next steps
+# 12. Detect project type and suggest next steps
 echo ""
 echo "🔍 Detecting project type..."
 

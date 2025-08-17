@@ -1,13 +1,31 @@
 #!/bin/bash
 
-# 🧪 Test Runner Agent - Exécution progressive des tests
+# 🧪 Test Runner Agent v2.1 - Tests avec contexte minimal
 # Usage: ./test-runner.sh [smoke|unit|integration|full] [path]
 
 set -e
 
+# Load context manager
+CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+[ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+
 LEVEL=${1:-smoke}
 TARGET=${2:-.}
-OUTPUT_DIR="${JEANCLAUDE_MEMORY:-../.jeanclaude/memory}/session"
+
+# Test Runner needs ONLY: project type and last test results
+if [ -n "$JEANCLAUDE_DIR" ]; then
+    PROJECT_ROOT=$(get_context "test-runner" "minimal" "project_root" 2>/dev/null || pwd)
+    PROJECT_TYPE=$(get_context "test-runner" "shared" "project_type" 2>/dev/null || echo "unknown")
+    OUTPUT_DIR="${JEANCLAUDE_DIR}/memory/session"
+else
+    PROJECT_ROOT=$(pwd)
+    PROJECT_TYPE="unknown"
+    OUTPUT_DIR="${PROJECT_ROOT}/.jeanclaude/memory/session"
+fi
+
+# Agent-specific: test history
+LAST_TEST_LEVEL=$(get_context "test-runner" "agent" "last_level" || echo "none")
+LAST_TEST_STATUS=$(get_context "test-runner" "agent" "last_status" || echo "unknown")
 
 function log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] [TEST-RUNNER] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
@@ -200,6 +218,28 @@ EOF
 
 # Ensure output directory exists
 mkdir -p "$OUTPUT_DIR" "$(dirname "$OUTPUT_DIR")/logs"
+
+# Save test-runner context
+function save_context() {
+    local status="unknown"
+    if [ -f "$OUTPUT_DIR/test-${LEVEL}.log" ]; then
+        if grep -q "FAIL\|ERROR" "$OUTPUT_DIR/test-${LEVEL}.log"; then
+            status="failed"
+        else
+            status="passed"
+        fi
+    fi
+    
+    save_agent_context "test-runner" "{
+        \"last_level\": \"$LEVEL\",
+        \"last_status\": \"$status\",
+        \"last_run\": \"$(date -Iseconds)\",
+        \"framework\": \"$FRAMEWORK\",
+        \"target\": \"$TARGET\"
+    }"
+}
+
+trap save_context EXIT
 
 # Detect test framework
 FRAMEWORK=$(detect_test_framework "$TARGET")

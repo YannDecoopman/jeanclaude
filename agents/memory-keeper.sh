@@ -1,13 +1,26 @@
 #!/bin/bash
 
-# 🧠 Memory Keeper Agent - Gestion de la mémoire court/long terme
+# 🧠 Memory Keeper Agent v2.1 - Accès complet au contexte (exception)
 # Usage: ./memory-keeper.sh [save|recall|clean|analyze] [context]
+# NOTE: Memory Keeper a accès à TOUT le contexte par nécessité
 
 set -e
 
+# Load context manager
+CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+[ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+
 ACTION=${1:-save}
 CONTEXT=${2:-""}
-MEMORY_DIR="${JEANCLAUDE_MEMORY:-../.jeanclaude/memory}"
+
+# Memory Keeper is SPECIAL: needs access to ALL contexts
+if [ -n "$JEANCLAUDE_DIR" ]; then
+    PROJECT_ROOT=$(get_context "memory-keeper" "minimal" "project_root" 2>/dev/null || pwd)
+    MEMORY_DIR="${JEANCLAUDE_DIR}/memory"
+else
+    PROJECT_ROOT=$(pwd)
+    MEMORY_DIR="${PROJECT_ROOT}/.jeanclaude/memory"
+fi
 SHORT_TERM="$MEMORY_DIR/session"
 LONG_TERM="$MEMORY_DIR/project"
 
@@ -154,6 +167,15 @@ function clean_old_sessions() {
 
 function extract_learnings() {
     log "Extracting learnings from session"
+    
+    # Memory Keeper can access ALL agent contexts for learning
+    for agent_file in "$PROJECT_ROOT/.jeanclaude/context/agents/"*.json; do
+        if [ -f "$agent_file" ]; then
+            local agent_name=$(basename "$agent_file" .json)
+            echo "## Agent: $agent_name" >> "$LONG_TERM/patterns.md"
+            cat "$agent_file" >> "$LONG_TERM/patterns.md"
+        fi
+    done
     
     # Extract successful patterns
     if [ -f "$SHORT_TERM/decisions.log" ]; then

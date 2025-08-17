@@ -1,12 +1,29 @@
 #!/bin/bash
 
-# 🎯 Clarifier Agent - Reformulation et validation des demandes
+# 🎯 Clarifier Agent v2.1 - Reformulation avec contexte minimal
 # Usage: ./clarifier.sh "user request"
 
 set -e
 
+# Load context manager
+CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+[ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+
 REQUEST="$1"
-OUTPUT_DIR="${JEANCLAUDE_MEMORY:-../.jeanclaude/memory}/session"
+
+# Clarifier needs ONLY: project type and previous clarifications
+if [ -n "$JEANCLAUDE_DIR" ]; then
+    PROJECT_ROOT=$(get_context "clarifier" "minimal" "project_root" 2>/dev/null || pwd)
+    PROJECT_TYPE=$(get_context "clarifier" "shared" "project_type" 2>/dev/null || echo "unknown")
+    OUTPUT_DIR="${JEANCLAUDE_DIR}/memory/session"
+else
+    PROJECT_ROOT=$(pwd)
+    PROJECT_TYPE="unknown"
+    OUTPUT_DIR="${PROJECT_ROOT}/.jeanclaude/memory/session"
+fi
+
+# Agent-specific: history of clarifications
+CLARIFICATION_COUNT=$(get_context "clarifier" "agent" "total_clarifications" || echo "0")
 
 function log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] [CLARIFIER] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
@@ -118,6 +135,20 @@ EOF
 
 # Ensure output directory exists
 mkdir -p "$OUTPUT_DIR" "$(dirname "$OUTPUT_DIR")/logs"
+
+# Save clarifier context
+function save_context() {
+    local new_count=$((CLARIFICATION_COUNT + 1))
+    
+    save_agent_context "clarifier" "{
+        \"total_clarifications\": $new_count,
+        \"last_request\": \"$(echo "$REQUEST" | head -c 100)\",
+        \"last_clarification\": \"$(date -Iseconds)\",
+        \"project_type_context\": \"$PROJECT_TYPE\"
+    }"
+}
+
+trap save_context EXIT
 
 if [ -z "$REQUEST" ]; then
     echo "Usage: $0 \"user request to clarify\""

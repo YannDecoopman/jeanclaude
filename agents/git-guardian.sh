@@ -1,13 +1,31 @@
 #!/bin/bash
 
-# 🛡️ Git Guardian Agent - Gestion automatique des commits et branches
+# 🛡️ Git Guardian Agent v2.1 - Gestion Git avec contexte minimal
 # Usage: ./git-guardian.sh [check|commit|branch|status]
 
 set -e
 
+# Load context manager
+CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+[ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+
 ACTION=${1:-check}
 MESSAGE=${2:-""}
-OUTPUT_DIR="${JEANCLAUDE_MEMORY:-../.jeanclaude/memory}/session"
+
+# Git Guardian needs ONLY: git state and commit history
+if [ -n "$JEANCLAUDE_DIR" ]; then
+    PROJECT_ROOT=$(get_context "git-guardian" "minimal" "project_root" 2>/dev/null || pwd)
+    CURRENT_BRANCH=$(get_context "git-guardian" "shared" "git_branch" 2>/dev/null || git branch --show-current 2>/dev/null || echo "main")
+    OUTPUT_DIR="${JEANCLAUDE_DIR}/memory/session"
+else
+    PROJECT_ROOT=$(pwd)
+    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null || echo "main")
+    OUTPUT_DIR="${PROJECT_ROOT}/.jeanclaude/memory/session"
+fi
+
+# Agent-specific: commit patterns
+LAST_COMMIT_TIME=$(get_context "git-guardian" "agent" "last_commit_time" || echo "0")
+COMMIT_STYLE=$(get_context "git-guardian" "agent" "commit_style" || echo "conventional")
 
 # Config
 COMMIT_INTERVAL=1800  # 30 minutes in seconds
@@ -167,6 +185,22 @@ EOF
 
 # Ensure output directory exists
 mkdir -p "$OUTPUT_DIR" "$(dirname "$OUTPUT_DIR")/logs"
+
+# Save git-guardian context
+function save_context() {
+    local commits_today=$(git log --since="24 hours ago" --oneline 2>/dev/null | wc -l || echo 0)
+    
+    save_agent_context "git-guardian" "{
+        \"last_commit_time\": $(date +%s),
+        \"last_action\": \"$ACTION\",
+        \"current_branch\": \"$CURRENT_BRANCH\",
+        \"commits_today\": $commits_today,
+        \"commit_style\": \"$COMMIT_STYLE\",
+        \"uncommitted_files\": $(git status --porcelain 2>/dev/null | wc -l || echo 0)
+    }"
+}
+
+trap save_context EXIT
 
 # Execute action
 case $ACTION in

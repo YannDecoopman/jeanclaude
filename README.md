@@ -1,6 +1,6 @@
-# 🤖 Jean Claude Framework v2 - ReAct & Learn
+# 🤖 Jean Claude Framework v2.1 - ReAct & Learn with Minimal Context
 
-Un framework intelligent pour maximiser l'efficacité de Claude Code avec agents autonomes, hooks, et système de mémoire.
+Un framework intelligent pour maximiser l'efficacité de Claude Code avec agents autonomes, hooks, système de mémoire et gestion de contexte minimaliste.
 
 ## 🚀 Installation rapide
 
@@ -15,7 +15,28 @@ git submodule add https://github.com/YannDecoopman/jeanclaude.git .jeanclaude-fr
 ./.jeanclaude-framework/install.sh .
 ```
 
-## 🏗️ Architecture v2
+## 🆕 Nouveautés v2.1
+
+### 🎯 **Système de Contexte Minimaliste**
+Chaque agent ne reçoit QUE le contexte nécessaire :
+- **Navigator** : Chemin projet + patterns fichiers (1KB)
+- **Git Guardian** : État Git + historique commits (2KB)
+- **Test Runner** : Framework + derniers résultats (5KB)
+- **Clarifier** : Demande user + historique (3KB)
+- **Memory Keeper** : Accès complet (exception)
+
+### 📊 **Context Manager**
+```bash
+# Contexte à 3 niveaux
+.jeanclaude/context/
+├── minimal.json     # Strict minimum (< 500 bytes)
+├── shared.json      # Partagé entre agents (< 1KB)
+└── agents/          # Spécifique par agent
+    ├── navigator.json
+    └── git-guardian.json
+```
+
+## 🏗️ Architecture v2.1
 
 ### 🤖 **Agents Autonomes**
 - **navigator.sh** - Découverte et cartographie du code
@@ -220,4 +241,4 @@ MIT - Utilisez librement dans vos projets
 
 *Développé par Yann avec Claude pour optimiser le pair programming IA*
 
-**Version 2.0** | [Documentation](https://github.com/YannDecoopman/jeanclaude) | [Issues](https://github.com/YannDecoopman/jeanclaude/issues)
+**Version 2.1** | [Documentation](https://github.com/YannDecoopman/jeanclaude) | [Issues](https://github.com/YannDecoopman/jeanclaude/issues)

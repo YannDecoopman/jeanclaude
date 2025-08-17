@@ -1,13 +1,29 @@
 #!/bin/bash
 
-# 🧭 Navigator Agent - Découverte et navigation dans le codebase
+# 🧭 Navigator Agent v2.1 - Découverte et navigation avec contexte minimal
 # Usage: ./navigator.sh [discover|map|search] [path|query]
 
 set -e
 
+# Load context manager
+CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+[ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+
 ACTION=${1:-discover}
 TARGET=${2:-.}
-OUTPUT_DIR="${JEANCLAUDE_MEMORY:-../.jeanclaude/memory}/project"
+
+# Get ONLY minimal context needed
+if [ -n "$JEANCLAUDE_DIR" ]; then
+    PROJECT_ROOT=$(get_context "navigator" "minimal" "project_root" 2>/dev/null || pwd)
+    OUTPUT_DIR="${JEANCLAUDE_DIR}/memory/project"
+else
+    PROJECT_ROOT=$(pwd)
+    OUTPUT_DIR="${PROJECT_ROOT}/.jeanclaude/memory/project"
+fi
+
+# Navigator-specific context (if exists)
+LAST_SCAN=$(get_context "navigator" "agent" "last_scan" || echo "never")
+CACHE_VALID=$(get_context "navigator" "agent" "cache_valid_until" || echo "0")
 
 function log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] [NAVIGATOR] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
@@ -16,6 +32,14 @@ function log() {
 function discover_structure() {
     local path=$1
     log "Discovering structure of $path"
+    
+    # Check cache validity
+    local now=$(date +%s)
+    if [ "$now" -lt "$CACHE_VALID" ] && [ -f "$OUTPUT_DIR/structure.md" ]; then
+        log "Using cached structure (valid until $(date -d @$CACHE_VALID))"
+        cat "$OUTPUT_DIR/structure.md"
+        return 0
+    fi
     
     # Create navigation map
     find "$path" -type f -name "*.py" -o -name "*.js" -o -name "*.ts" \
@@ -91,6 +115,23 @@ function search_pattern() {
 
 # Ensure output directory exists
 mkdir -p "$OUTPUT_DIR" "$(dirname "$OUTPUT_DIR")/logs"
+
+# Save navigator context after execution
+function save_context() {
+    local now=$(date +%s)
+    local cache_duration=300  # 5 minutes cache
+    
+    save_agent_context "navigator" "{
+        \"last_scan\": \"$(date -Iseconds)\",
+        \"cache_valid_until\": $((now + cache_duration)),
+        \"files_discovered\": $(find "$TARGET" -type f 2>/dev/null | wc -l || echo 0),
+        \"action_performed\": \"$ACTION\",
+        \"target\": \"$TARGET\"
+    }"
+}
+
+# Register cleanup
+trap save_context EXIT
 
 # Execute action
 case $ACTION in
