@@ -1,0 +1,112 @@
+# 🤖 CLAUDE.md - Instructions pour Claude Code
+
+## 📋 Résumé du Projet
+
+**[NOM_PROJET]** est [DESCRIPTION_COURTE]
+
+### Objectifs principaux
+- [OBJECTIF_1]
+- [OBJECTIF_2]
+- [OBJECTIF_3]
+
+## 🏗️ Architecture
+
+```
+[STRUCTURE_DOSSIERS]
+```
+
+### Stack technique
+- **Backend :** [TECHNOLOGIES]
+- **Frontend :** [TECHNOLOGIES]
+- **Base de données :** [TYPE]
+- **Infrastructure :** [DESCRIPTION]
+
+## 🚨 Points d'Attention Critiques
+
+### ⚠️ À surveiller
+- [POINT_CRITIQUE_1]
+- [POINT_CRITIQUE_2]
+
+### 🚫 Ne jamais faire
+- [INTERDICTION_1]
+- [INTERDICTION_2]
+
+### ✅ Toujours faire
+- [BONNE_PRATIQUE_1]
+- [BONNE_PRATIQUE_2]
+
+## 🔧 Commandes Essentielles
+
+### Démarrage
+```bash
+# [COMMANDE_START]
+```
+
+### Tests
+```bash
+# [COMMANDE_TEST]
+```
+
+### Build
+```bash
+# [COMMANDE_BUILD]
+```
+
+## 📚 Conventions
+
+### Code Style
+- [CONVENTION_1]
+- [CONVENTION_2]
+
+### Git
+- [CONVENTION_GIT_1]
+- [CONVENTION_GIT_2]
+
+### Nommage
+- [CONVENTION_NOMMAGE]
+
+## 🎯 Workflow avec Claude
+
+### Process standard
+1. **Clarification** : Toujours reformuler et confirmer avant d'agir
+2. **Atomic Features** : Une feature à la fois, validation avant suivante
+3. **Documentation** : Mettre à jour au fur et à mesure
+
+### Framework activé
+- ✅ Méthode Clarification
+- ✅ Découpage atomique
+- ✅ Validation progressive
+- ✅ Navigation documentée
+
+## 🔄 État Actuel
+
+### ✅ Fait
+- [FEATURE_COMPLETE_1]
+- [FEATURE_COMPLETE_2]
+
+### 🚧 En cours
+- [FEATURE_EN_COURS]
+
+### 📝 Backlog
+- [FEATURE_TODO_1]
+- [FEATURE_TODO_2]
+
+## 💡 Contexte Important
+
+[INFORMATIONS_CONTEXTUELLES_IMPORTANTES]
+
+## 🐛 Problèmes Connus
+
+| Problème | Workaround | Fix prévu |
+|----------|------------|-----------|
+| [PROBLEME_1] | [SOLUTION_TEMP] | [QUAND] |
+
+## 📞 Contacts & Ressources
+
+- **Documentation :** [LIEN]
+- **API Docs :** [LIEN]
+- **Design System :** [LIEN]
+
+---
+*Dernière mise à jour : [DATE]*
+*Framework : claude-framework v1.0*

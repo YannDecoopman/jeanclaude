@@ -1,0 +1,167 @@
+#!/bin/bash
+
+# 🎯 Clarifier Agent v2.1 - Reformulation avec contexte minimal
+# Usage: ./clarifier.sh "user request"
+
+set -e
+
+# Load context manager
+CONTEXT_LIB="$(dirname "$0")/../lib/context-manager.sh"
+[ -f "$CONTEXT_LIB" ] && source "$CONTEXT_LIB"
+
+REQUEST="$1"
+
+# Clarifier needs ONLY: project type and previous clarifications
+if [ -n "$JEANCLAUDE_DIR" ]; then
+    PROJECT_ROOT=$(get_context "clarifier" "minimal" "project_root" 2>/dev/null || pwd)
+    PROJECT_TYPE=$(get_context "clarifier" "shared" "project_type" 2>/dev/null || echo "unknown")
+    OUTPUT_DIR="${JEANCLAUDE_DIR}/memory/session"
+else
+    PROJECT_ROOT=$(pwd)
+    PROJECT_TYPE="unknown"
+    OUTPUT_DIR="${PROJECT_ROOT}/.jeanclaude/memory/session"
+fi
+
+# Agent-specific: history of clarifications
+CLARIFICATION_COUNT=$(get_context "clarifier" "agent" "total_clarifications" || echo "0")
+
+function log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] [CLARIFIER] $1" | tee -a "$OUTPUT_DIR/../logs/agents.log"
+}
+
+function extract_keywords() {
+    local text="$1"
+    # Extract potential technical keywords
+    echo "$text" | grep -oE '\b(add|create|fix|update|delete|refactor|test|deploy|install|configure|setup|implement|optimize|debug|analyze)\b' | sort -u
+}
+
+function identify_scope() {
+    local text="$1"
+    local scope="unknown"
+    
+    # Identify if it's about frontend, backend, database, etc.
+    if echo "$text" | grep -qiE 'page|ui|frontend|html|css|react|vue|angular'; then
+        scope="frontend"
+    elif echo "$text" | grep -qiE 'api|endpoint|backend|server|route|controller'; then
+        scope="backend"
+    elif echo "$text" | grep -qiE 'database|table|query|sql|migration|schema'; then
+        scope="database"
+    elif echo "$text" | grep -qiE 'test|spec|unit|integration|e2e'; then
+        scope="testing"
+    elif echo "$text" | grep -qiE 'deploy|docker|ci|cd|build|production'; then
+        scope="deployment"
+    fi
+    
+    echo "$scope"
+}
+
+function generate_clarification() {
+    local request="$1"
+    local keywords=$(extract_keywords "$request")
+    local scope=$(identify_scope "$request")
+    
+    cat > "$OUTPUT_DIR/clarification.md" << EOF
+# 📋 Clarification Request
+Timestamp: $(date)
+
+## Original Request
+"$request"
+
+## My Understanding
+Based on your request, I understand that you want to:
+
+### Scope: $scope
+
+### Actions Identified:
+$(echo "$keywords" | sed 's/^/- /')
+
+### Detailed Interpretation:
+EOF
+
+    # Generate interpretation based on keywords
+    if echo "$keywords" | grep -q "add\|create"; then
+        echo "- You want to CREATE something new" >> "$OUTPUT_DIR/clarification.md"
+    fi
+    if echo "$keywords" | grep -q "fix\|debug"; then
+        echo "- You want to FIX an existing issue" >> "$OUTPUT_DIR/clarification.md"
+    fi
+    if echo "$keywords" | grep -q "update\|refactor"; then
+        echo "- You want to MODIFY existing functionality" >> "$OUTPUT_DIR/clarification.md"
+    fi
+    if echo "$keywords" | grep -q "test"; then
+        echo "- You want to ADD or RUN tests" >> "$OUTPUT_DIR/clarification.md"
+    fi
+    
+    cat >> "$OUTPUT_DIR/clarification.md" << EOF
+
+### Questions for Validation:
+1. Is my understanding of the scope ($scope) correct?
+2. Are all the actions I identified what you intended?
+3. Is there a specific priority order for these actions?
+4. Are there any constraints or requirements I should be aware of?
+
+### Proposed Approach:
+1. Validate understanding with you
+2. Create feature branch if needed
+3. Implement changes incrementally
+4. Test each change
+5. Commit atomically
+6. Request your validation
+
+## Decision Log Entry
+EOF
+    
+    # Log the clarification
+    echo "$(date): Request clarified - Scope: $scope, Keywords: $keywords" >> "$OUTPUT_DIR/decisions.log"
+    
+    log "Clarification generated for: $(echo "$request" | head -c 50)..."
+}
+
+function save_context() {
+    local request="$1"
+    
+    # Save to session memory
+    cat >> "$OUTPUT_DIR/current.md" << EOF
+
+## $(date '+%H:%M') - New Request
+**Original:** $request
+**Status:** Clarifying
+**Scope:** $(identify_scope "$request")
+
+EOF
+    
+    log "Context saved to session memory"
+}
+
+# Ensure output directory exists
+mkdir -p "$OUTPUT_DIR" "$(dirname "$OUTPUT_DIR")/logs"
+
+# Save clarifier context
+function save_context() {
+    local new_count=$((CLARIFICATION_COUNT + 1))
+    
+    save_agent_context "clarifier" "{
+        \"total_clarifications\": $new_count,
+        \"last_request\": \"$(echo "$REQUEST" | head -c 100)\",
+        \"last_clarification\": \"$(date -Iseconds)\",
+        \"project_type_context\": \"$PROJECT_TYPE\"
+    }"
+}
+
+trap save_context EXIT
+
+if [ -z "$REQUEST" ]; then
+    echo "Usage: $0 \"user request to clarify\""
+    exit 1
+fi
+
+log "Starting clarification for request"
+
+# Process the request
+generate_clarification "$REQUEST"
+save_context "$REQUEST"
+
+# Output the clarification
+cat "$OUTPUT_DIR/clarification.md"
+
+log "Clarification complete - awaiting user validation"

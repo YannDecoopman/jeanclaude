@@ -1,0 +1,25 @@
+{
+  "trust_level": "smart",
+  "auto_delay": 6,
+  "updated": "2025-08-17T19:00:00+01:00",
+  "operations": {
+    "safe": ["read", "list", "status", "info", "analyze", "check", "validate"],
+    "moderate": ["edit", "write", "create", "test", "build", "commit", "branch", "install"],
+    "dangerous": ["delete", "remove", "drop", "force", "reset", "truncate", "deploy", "push"]
+  },
+  "context_rules": {
+    "current_task": {
+      "auto_proceed": ["edit", "write", "test", "format", "lint"],
+      "description": "Operations on files in the current working context"
+    },
+    "production": {
+      "always_confirm": ["deploy", "push", "merge", "migrate"],
+      "description": "Operations affecting production environment"
+    }
+  },
+  "user_preferences": {
+    "verbose_countdown": true,
+    "sound_alert": false,
+    "log_decisions": true
+  }
+}
