@@ -1,0 +1,24 @@
+# Jean Claude v2 - Gitignore
+
+# Session temporaires
+sessions/current-session.md
+sessions/history/*.current
+
+# Config détectée
+detected-config.json
+
+# Temp files
+*.tmp
+*.swp
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Backups
+*.bak
+*~
