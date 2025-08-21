@@ -6,10 +6,10 @@ Développement WordPress optimisé pour société d'édition avec Docker.
 ## Configuration Active
 
 ### 🧠 Agents Actifs
-1. **session-continuity** (mémoire entre sessions)
+1. **resume** (mémoire entre sessions)
 2. **wordpress-expert** (expertise WordPress)
-3. **pragmatic-builder** (livraison rapide)
-4. **memory-keeper** (apprentissage continu)
+3. **shipit** (livraison rapide)
+4. **recall** (apprentissage continu)
 
 ### 🔓 Trust Level
 **autonomous**

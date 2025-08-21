@@ -6,10 +6,10 @@ Prototyper rapidement tout en gardant la mémoire du projet. Idéal pour sociét
 ## Configuration Active
 
 ### 🧠 Agents Actifs
-1. **session-continuity** (toujours actif)
-2. **action-logger** (tracking réel)
-3. **memory-keeper** (mémoire projet)
-4. **pragmatic-builder** (comportement principal)
+1. **resume** (toujours actif)
+2. **tracker** (tracking réel)
+3. **recall** (mémoire projet)
+4. **shipit** (comportement principal)
 
 ### 🔓 Trust Level
 **autonomous**

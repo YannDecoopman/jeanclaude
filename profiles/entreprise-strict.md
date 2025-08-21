@@ -6,7 +6,7 @@ Code production-ready avec standards entreprise. Qualité, maintenabilité, conf
 ## Configuration Active
 
 ### 🧠 Agent Principal
-**git-guardian**
+**atomic**
 
 ### 🔓 Trust Level
 **conservative**

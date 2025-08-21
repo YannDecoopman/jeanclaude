@@ -6,9 +6,9 @@ POCs rapides et APIs performantes avec FastAPI. Focus sur "ça marche" avant "c'
 ## Configuration Active
 
 ### 🧠 Agents Actifs
-1. **session-continuity** (mémoire entre sessions)
+1. **resume** (mémoire entre sessions)
 2. **fastapi-expert** (expertise FastAPI/Python)
-3. **pragmatic-builder** (ship fast)
+3. **shipit** (ship fast)
 
 ### 🔓 Trust Level
 **autonomous**

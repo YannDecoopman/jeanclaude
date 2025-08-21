@@ -6,9 +6,9 @@ Développement Laravel efficace avec bonnes pratiques mais sans sur-ingénierie.
 ## Configuration Active
 
 ### 🧠 Agents Actifs
-1. **session-continuity** (mémoire entre sessions)
+1. **resume** (mémoire entre sessions)
 2. **laravel-expert** (expertise Laravel)
-3. **pragmatic-builder** (équilibre rapidité/qualité)
+3. **shipit** (équilibre rapidité/qualité)
 
 ### 🔓 Trust Level
 **autonomous**

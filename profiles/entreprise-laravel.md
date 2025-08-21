@@ -6,11 +6,11 @@ Code production-ready pour clients exigeants. PSR-12 strict, tests obligatoires,
 ## Configuration Active
 
 ### 🧠 Agents Actifs (ordre de priorité)
-1. **session-continuity** (toujours actif)
-2. **action-logger** (tracking réel)
+1. **resume** (toujours actif)
+2. **tracker** (tracking réel)
 3. **psr-enforcer** (validation PSR-12)
 4. **test-guardian** (TDD obligatoire)  
-5. **memory-keeper** (contexte projet)
+5. **recall** (contexte projet)
 
 ### 🔓 Trust Level
 **conservative** (demande confirmation pour tout)

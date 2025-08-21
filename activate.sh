@@ -85,24 +85,24 @@ echo "## 📁 Fichiers de Configuration Chargés" >> "$CLAUDE_FILE"
 echo "" >> "$CLAUDE_FILE"
 
 # Extract and load referenced files
-if grep -q "pragmatic-builder" "$PROFILE_FILE"; then
-    echo "### Agent: Pragmatic Builder" >> "$CLAUDE_FILE"
+if grep -q "shipit" "$PROFILE_FILE"; then
+    echo "### Agent: ShipIt" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
-    cat "$BASE_DIR/agents/base/pragmatic-builder.md" >> "$CLAUDE_FILE"
-    echo "" >> "$CLAUDE_FILE"
-fi
-
-if grep -q "git-guardian" "$PROFILE_FILE"; then
-    echo "### Agent: Git Guardian" >> "$CLAUDE_FILE"
-    echo "" >> "$CLAUDE_FILE"
-    cat "$BASE_DIR/agents/base/git-guardian.md" >> "$CLAUDE_FILE"
+    cat "$BASE_DIR/agents/base/shipit.md" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
 fi
 
-if grep -q "memory-keeper" "$PROFILE_FILE"; then
-    echo "### Agent: Memory Keeper" >> "$CLAUDE_FILE"
+if grep -q "atomic" "$PROFILE_FILE"; then
+    echo "### Agent: Atomic" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
-    cat "$BASE_DIR/agents/base/memory-keeper.md" >> "$CLAUDE_FILE"
+    cat "$BASE_DIR/agents/base/atomic.md" >> "$CLAUDE_FILE"
+    echo "" >> "$CLAUDE_FILE"
+fi
+
+if grep -q "recall" "$PROFILE_FILE"; then
+    echo "### Agent: Recall" >> "$CLAUDE_FILE"
+    echo "" >> "$CLAUDE_FILE"
+    cat "$BASE_DIR/agents/base/recall.md" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
     echo "### Session Context" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
@@ -124,10 +124,10 @@ if grep -q "test-guardian" "$PROFILE_FILE"; then
     echo "" >> "$CLAUDE_FILE"
 fi
 
-if grep -q "session-continuity" "$PROFILE_FILE"; then
-    echo "### Agent: Session Continuity" >> "$CLAUDE_FILE"
+if grep -q "resume" "$PROFILE_FILE"; then
+    echo "### Agent: Resume" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
-    cat "$BASE_DIR/agents/base/session-continuity.md" >> "$CLAUDE_FILE"
+    cat "$BASE_DIR/agents/base/resume.md" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
     
     # Ajouter le contexte de session si existe
@@ -160,10 +160,10 @@ if grep -q "fastapi-expert" "$PROFILE_FILE"; then
     echo "" >> "$CLAUDE_FILE"
 fi
 
-if grep -q "action-logger" "$PROFILE_FILE"; then
-    echo "### Agent: Action Logger" >> "$CLAUDE_FILE"
+if grep -q "tracker" "$PROFILE_FILE"; then
+    echo "### Agent: Tracker" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
-    cat "$BASE_DIR/agents/base/action-logger.md" >> "$CLAUDE_FILE"
+    cat "$BASE_DIR/agents/base/tracker.md" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
 fi
 
