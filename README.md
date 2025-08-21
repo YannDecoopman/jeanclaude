@@ -1,14 +1,14 @@
-# 🤖 Jean Claude v2 - Système de Configuration Modulaire pour Claude Code
+# 🤖 Jean Claude v2 - Modular Configuration System for Claude Code
 
-> Transforme Claude Code en assistant personnalisé avec agents modulaires et mémoire persistante.
+> Transform Claude Code into a personalized assistant with modular agents and persistent memory.
 
 ## 🚀 Quick Start
 
 ```bash
-# Détection automatique du projet
+# Automatic project detection
 ./activate.sh --auto
 
-# Ou choix manuel du profil
+# Or manual profile selection
 ./activate.sh poc-rapide
 ```
 
@@ -16,65 +16,65 @@
 
 ```
 jean-claude-v2/
-├── agents/          # Agents qui modifient le comportement
+├── agents/          # Agents that modify behavior
 │   ├── base/       # shipit, recall, atomic, resume, tracker
 │   └── specialized/ # wordpress-expert, laravel-expert, etc.
-├── contexts/        # Niveaux de confiance (autonomous, conservative)
-├── profiles/        # Combinaisons prêtes à l'emploi
-└── sessions/        # Mémoire persistante entre sessions
+├── contexts/        # Trust levels (autonomous, conservative)
+├── profiles/        # Ready-to-use combinations
+└── sessions/        # Persistent memory between sessions
 ```
 
-## 🎯 Agents Disponibles
+## 🎯 Available Agents
 
-### Agents de Base
-- **shipit**: Ship fast, commit toutes les 20 min
-- **recall**: Mémoire des sessions précédentes  
-- **atomic**: Commits atomiques stricts
-- **resume**: Reprend avec le contexte complet
-- **tracker**: Log toutes les actions réelles
+### Base Agents
+- **shipit**: Ship fast, commit every 20 min
+- **recall**: Memory from previous sessions  
+- **atomic**: Strict atomic commits
+- **resume**: Resume with complete context
+- **tracker**: Log all real actions
 
-### Agents Spécialisés
+### Specialized Agents
 - **wordpress-expert**: Hooks, child themes, WP-CLI
 - **laravel-expert**: Eloquent, queues, services
 - **fastapi-expert**: Async, Pydantic, SQLAlchemy
-- **psr-enforcer**: PSR-12 strict pour PHP
-- **test-guardian**: TDD obligatoire, coverage 80%+
+- **psr-enforcer**: Strict PSR-12 for PHP
+- **test-guardian**: Mandatory TDD, 80%+ coverage
 
-## 🎭 Profils Préconfigurés
+## 🎭 Pre-configured Profiles
 
-- **poc-rapide**: Prototype vite, zéro friction
-- **entreprise-laravel**: PSR-12, tests, code production
-- **wordpress-docker**: Optimisé pour WordPress dockerisé
-- **laravel-dev**: Équilibre rapidité/qualité
-- **poc-python**: FastAPI rapide pour POCs
+- **poc-rapide**: Fast prototyping, zero friction
+- **entreprise-laravel**: PSR-12, tests, production code
+- **wordpress-docker**: Optimized for dockerized WordPress
+- **laravel-dev**: Balance between speed and quality
+- **poc-python**: Quick FastAPI for POCs
 
-## 🔍 Détection Automatique
+## 🔍 Automatic Detection
 
 ```bash
 ./project-detector.sh
 
-# Détecte:
+# Detects:
 # - WordPress (wp-config.php + docker-compose)
 # - Laravel (artisan + composer.json)
 # - FastAPI (requirements.txt + fastapi)
 ```
 
-## 💾 Mémoire Persistante
+## 💾 Persistent Memory
 
 ```bash
-# Début de session
-./session-manager.sh start mon-projet
+# Start session
+./session-manager.sh start my-project
 
-# Fin de session (sauvegarde automatique)
-./session-manager.sh end mon-projet
+# End session (auto-save)
+./session-manager.sh end my-project
 
-# Historique
-./session-manager.sh history mon-projet
+# View history
+./session-manager.sh history my-project
 ```
 
-## 📊 Tracking d'Actions
+## 📊 Action Tracking
 
-L'agent `tracker` log toutes les actions dans `.jean-claude/session.log`:
+The `tracker` agent logs all actions in `.jean-claude/session.log`:
 
 ```log
 [14:32:01] CREATE file:UserService.php lines:45
@@ -82,49 +82,71 @@ L'agent `tracker` log toutes les actions dans `.jean-claude/session.log`:
 [14:34:00] COMMIT message:"fix: queue" files:3
 ```
 
-Analyse avec:
+Analyze with:
 ```bash
 tools/analyze-logs.sh summary
 tools/analyze-logs.sh patterns
 ```
 
-## 🆚 Différence avec Jean Claude v1
+## 🆚 Difference with Jean Claude v1
 
-| v1 (Scripts Bash) | v2 (Agents Markdown) |
-|-------------------|---------------------|
-| Scripts qui "font" | Instructions qui modifient le comportement |
-| Pas de mémoire | Mémoire persistante complète |
-| Profils fixes | Agents modulaires combinables |
-| Pas de détection | Auto-détection du type de projet |
+| v1 (Bash Scripts) | v2 (Markdown Agents) |
+|-------------------|----------------------|
+| Scripts that "do" things | Instructions that modify behavior |
+| No memory | Complete persistent memory |
+| Fixed profiles | Combinable modular agents |
+| No detection | Auto-detection of project type |
 
-## 📈 ROI Mesuré
+## 📈 Measured ROI
 
-- **Sans Jean Claude**: 15-20 min pour retrouver le contexte
-- **Avec Jean Claude v2**: 0 min, reprise immédiate
-- **Gain par session**: 20-30 min
-- **Sur 10 sessions**: 3-5 heures économisées
+- **Without Jean Claude**: 15-20 min to recover context
+- **With Jean Claude v2**: 0 min, immediate resume
+- **Gain per session**: 20-30 min
+- **Over 10 sessions**: 3-5 hours saved
 
-## 🔄 Workflow Type
+## 🔄 Typical Workflow
 
 ```bash
-# 1. Activer le profil adapté
+# 1. Activate the right profile
 ./activate.sh --auto
 
-# 2. Claude Code lit CLAUDE.md avec les agents
+# 2. Claude Code reads CLAUDE.md with agents
 
-# 3. Comportement modifié:
-# - Commence par "Je reprends avec le contexte..."
-# - Commit automatique toutes les 20 min
-# - Log toutes les actions
-# - Sauvegarde la session à la fin
+# 3. Modified behavior:
+# - Starts with "Resuming with context..."
+# - Auto-commit every 20 min
+# - Logs all actions
+# - Saves session at the end
+```
+
+## 🎯 How It Works
+
+Jean Claude v2 uses **markdown agents** that Claude Code reads at the beginning of each session. These agents contain instructions that fundamentally change how Claude behaves:
+
+- **Not scripts** that execute commands
+- **But instructions** that modify Claude's personality and workflow
+- Claude reads them and **becomes** a different assistant
+
+Example: With the `shipit` agent, Claude stops asking "Would you like me to..." and starts saying "I'm doing X..." - a complete behavior change.
+
+## 🛠️ Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/YannDecoopman/jeanclaude.git
+cd jeanclaude
+
+# Use in your project
+cd ../your-project
+../jeanclaude/activate.sh --auto
 ```
 
 ## 📄 License
 
-MIT - Utilisez librement dans vos projets
+MIT - Use freely in your projects
 
 ---
 
-*Jean Claude v2 - "Des agents qui transforment vraiment le comportement de Claude"*
+*Jean Claude v2 - "Agents that truly transform Claude's behavior"*
 
-**Version 2.0** | Par Yann avec Claude
+**Version 2.0** | By Yann with Claude
