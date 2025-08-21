@@ -160,6 +160,13 @@ if grep -q "fastapi-expert" "$PROFILE_FILE"; then
     echo "" >> "$CLAUDE_FILE"
 fi
 
+if grep -q "action-logger" "$PROFILE_FILE"; then
+    echo "### Agent: Action Logger" >> "$CLAUDE_FILE"
+    echo "" >> "$CLAUDE_FILE"
+    cat "$BASE_DIR/agents/base/action-logger.md" >> "$CLAUDE_FILE"
+    echo "" >> "$CLAUDE_FILE"
+fi
+
 if grep -q "autonomous" "$PROFILE_FILE"; then
     echo "### Trust Level: Autonomous" >> "$CLAUDE_FILE"
     echo "" >> "$CLAUDE_FILE"
