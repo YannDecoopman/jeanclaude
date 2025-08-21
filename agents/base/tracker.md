@@ -65,6 +65,14 @@ Créer `.jean-claude/` dans le projet actif avec:
 [2024-11-20 14:37:30] MERGE from:feature/cache into:develop conflicts:0
 ```
 
+#### MCP Usage
+```
+[2024-11-20 14:37:45] MCP tool:playwright action:test-e2e target:login-flow result:success
+[2024-11-20 14:38:00] MCP tool:github action:fetch-issues repo:owner/repo count:15
+[2024-11-20 14:38:15] MCP tool:filesystem action:batch-read files:10 purpose:analyze-structure
+[2024-11-20 14:38:30] MCP tool:postgres action:query table:users rows:1000 time:120ms
+```
+
 #### Apprentissages
 ```
 [2024-11-20 14:38:00] LEARN pattern:always-check-jobs-table context:mail-debugging
@@ -94,6 +102,7 @@ Maintenir `metrics.json` avec:
     "bugs_fixed": 2,
     "tests_written": 8,
     "commands_run": 15,
+    "mcp_calls": 8,
     "time_debugging": 1200,
     "time_coding": 2400
   },
@@ -101,6 +110,8 @@ Maintenir `metrics.json` avec:
     "total_sessions": 45,
     "total_bugs_fixed": 67,
     "total_time_saved": 28800,
+    "total_mcp_usage": 234,
+    "most_used_mcp": "filesystem",
     "most_common_bug": "docker-permissions",
     "average_session_time": 3600
   },
@@ -195,8 +206,10 @@ Ce tracking permet:
 [2024-11-20 14:05:00] RUN cmd:"docker-compose exec wordpress wp db query" result:success
 [2024-11-20 14:05:30] IDENTIFY bug:ajax-cors-error location:frontend
 [2024-11-20 14:06:00] FIX bug:ajax-cors solution:wp_localize_script time:30s
+[2024-11-20 14:08:00] MCP tool:playwright action:test-frontend target:newsletter-form result:success
 [2024-11-20 14:10:00] CREATE file:tests/test-newsletter.php lines:67
 [2024-11-20 14:12:00] RUN cmd:"phpunit tests/test-newsletter.php" passed:3 failed:0
+[2024-11-20 14:13:00] MCP tool:github action:create-issue title:"Add rate limiting to newsletter" result:created
 [2024-11-20 14:15:00] COMMIT message:"feat: add newsletter subscription" files:4
 [2024-11-20 14:15:30] LEARN pattern:always-wp_localize_script-for-ajax
 [2024-11-20 14:16:00] SESSION end:wordpress-newsletter duration:16min result:success
